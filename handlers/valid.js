@@ -21,7 +21,7 @@ module.exports.isValid = function isValid(url,payload){
       }
     }
     else if (method === 'readall'){
-        return isValidSort(payload) & isValidMeta(payload);
+        return isValidSort(payload) & isValidMeta(payload) & isValidDeps(payload);
     }
     return true;
 }
@@ -70,4 +70,8 @@ function isValidSort(payload){
 
 function isValidMeta(payload){
     return (typeof payload.page === 'number') && (typeof payload.limit === 'number');
+}
+
+function isValidDeps(payload){
+    return typeof payload.includeDeps === 'undefined' || typeof payload.includeDeps === 'boolean';
 }

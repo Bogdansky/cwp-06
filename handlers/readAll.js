@@ -3,7 +3,8 @@ const logger = fs.createWriteStream('log.txt');
 const valid = require("./valid")
 let prop;
 let asc;
-
+let pageCount;
+let haveComments;
 
 module.exports.readall = function readall(req, res, payload, cb){
     if (valid.isValid(req.url, payload)){
@@ -11,14 +12,26 @@ module.exports.readall = function readall(req, res, payload, cb){
         if (payload.sortField !== 'undefined'){
             prop = payload.sortField;
             asc = payload.sortOrder;
+            haveComments = typeof payload.includeDeps === 'undefined' ? false : payload.includeDeps;
             switch(typeof articles[0][payload.sortField]){
                 case "number": articles.sort(compareNumber);
                 case "string": articles.sort(compareString);
                 default: break;
             }
         }
+        pageCount = getPageCount(articles.length,payload.limit);
         let result = getPage(articles, payload.page, payload.limit);
-        cb(null, {items:articles, meta:{}});
+        cb(null,
+           {
+                items:result,
+                meta:{
+                        page:payload.page,
+                        pages:pageCount,
+                        count:articles.length,
+                        limit:payload.limit
+                }
+           }
+        );
     }
     else{
         cb({ code: 404, message: 'Not found'});
@@ -43,3 +56,23 @@ function compareString(obj1, obj2){
         return !result;
     }
 }
+
+function getPage(articles, page, limit){
+    let result = [];
+    if (pageCount === 0 || page > pageCount){
+        result.push({article:"nothing", reason:"out of range"});
+    }
+    else{
+        for (let index = limit*(page-1); index < limit*page && index < articles.length; index++){
+            if (!haveComments){
+                delete articles[index].comments;
+            }
+            result.push(articles[index]);
+        }
+    }
+    return result;
+}
+
+function getPageCount(articleCount, articleLimit){
+    return Math.ceil(articleCount/articleLimit);
+} 
