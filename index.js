@@ -1,7 +1,6 @@
 const http = require('http');
 const fs = require('fs');
 const logger = fs.createWriteStream('log.txt');
-const nonObj = { code: 404, message: 'Not found'};
 const hostname = '127.0.0.1';
 const port = 3000;
 
@@ -14,8 +13,6 @@ const createComment = require('./handlers/createComment');
 const deleteComment = require('./handlers/deleteComment');
 
 const handlers = {
-  '/sum': sum,
-  '/mult': mult,
   '/api/articles/readall' : readAll.readall,
   '/api/articles/read' : read.read,
   '/api/articles/create' : create.create,
@@ -57,7 +54,7 @@ function getHandler(url) {
 
 
 function notFound(req, res, payload, cb) {
-  cb(nonObj);
+  cb({ code: 404, message: 'Not found'});
 }
 
 function parseBodyJson(req, cb) {
@@ -72,17 +69,6 @@ function parseBodyJson(req, cb) {
 
     cb(null, params);
   });
-}
-
-function sum(req, res, payload, cb) {
-  const result = { c: payload.a + payload.b };
-  cb(null, result);
-}
-
-function mult(req, res, payload, cb) {  
-  const result = { c: payload.a * payload.b };
-
-  cb(null, result);
 }
 
 function log(info){
