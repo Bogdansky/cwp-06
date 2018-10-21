@@ -1,6 +1,6 @@
 const fs = require('fs');
-const logger = fs.createWriteStream('log.txt');
-const valid = require("./valid")
+const valid = require("./valid");
+const log = require('./log');
 let prop;
 let asc;
 let pageCount;
@@ -21,6 +21,7 @@ module.exports.readall = function readall(req, res, payload, cb){
         }
         pageCount = getPageCount(articles.length,payload.limit);
         let result = getPage(articles, payload.page, payload.limit);
+        log.log({method:"readall", answer:result});
         cb(null,
            {
                 items:result,

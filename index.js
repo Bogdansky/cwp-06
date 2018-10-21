@@ -11,8 +11,10 @@ const update = require('./handlers/update');
 const del = require('./handlers/delete');
 const createComment = require('./handlers/createComment');
 const deleteComment = require('./handlers/deleteComment');
+const log = require('./handlers/log');
 
 const handlers = {
+  '/api/log' : log.getLog,
   '/api/articles/readall' : readAll.readall,
   '/api/articles/read' : read.read,
   '/api/articles/create' : create.create,
@@ -29,8 +31,6 @@ const server = http.createServer((req, res) => {
 
     handler(req, res, payload, (err, result) => {
       if (err) {
-        log(`\nurl: ${req.url}`);
-        log(`\nRequest:${JSON.stringify(payload)}`);
         res.statusCode = err.code;
         res.setHeader('Content-Type', 'application/json');
         res.end( JSON.stringify(err) );
@@ -71,9 +71,4 @@ function parseBodyJson(req, cb) {
   });
 }
 
-function log(info){
-  let date = new Date(); 
-  const dateString =  `${date.getDate()}.${date.getMonth()}.${date.getFullYear()}`;
-  const timeString = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}:${date.getMilliseconds()}`;
-  logger.write(`${dateString} ${timeString} `+info);
-}
+
