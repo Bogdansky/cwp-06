@@ -16,6 +16,6 @@ module.exports.del = function del(req, res, payload, cb){
       });
     }
     else{
-      cb(nonObj);
+      cb({ code: 404, message: 'Not found'});
     }
 }

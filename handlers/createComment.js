@@ -15,10 +15,10 @@ module.exports.createComment = function createComment(req, res, payload, cb){
         }
       });
       fs.writeFile('articles.json', JSON.stringify(articles), (err) => {
-        cb(null,result ? result : nonObj);
+        cb(null,result ? result : { code: 404, message: 'Not found'});
       });
     }
     else{
-      cb(nonObj);
+      cb({ code: 404, message: 'Not found'});
     }
 }

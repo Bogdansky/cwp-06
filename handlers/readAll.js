@@ -2,7 +2,7 @@ const fs = require('fs');
 const valid = require("./valid");
 const log = require('./log');
 let prop;
-let asc;
+let order;
 let pageCount;
 let haveComments;
 
@@ -11,7 +11,7 @@ module.exports.readall = function readall(req, res, payload, cb){
         let articles = JSON.parse(fs.readFileSync('articles.json'));
         if (payload.sortField !== 'undefined'){
             prop = payload.sortField;
-            asc = payload.sortOrder;
+            order = payload.sortOrder;
             haveComments = typeof payload.includeDeps === 'undefined' ? false : payload.includeDeps;
             switch(typeof articles[0][payload.sortField]){
                 case "number": articles.sort(compareNumber);
@@ -21,7 +21,7 @@ module.exports.readall = function readall(req, res, payload, cb){
         }
         pageCount = getPageCount(articles.length,payload.limit);
         let result = getPage(articles, payload.page, payload.limit);
-        log.log({method:"readall", answer:result});
+        log.log({method:"readall", ask:payload, answer:result});
         cb(null,
            {
                 items:result,
@@ -39,8 +39,8 @@ module.exports.readall = function readall(req, res, payload, cb){
     }
 }
 
-function compareNumber(obj1, obj2){
-    if(asc === 'asc'){
+function compareNumber(obj1, obj2){ // сравнивание чисел, возможно, некорректно / gulp & webpack  (посмотреть)
+    if(order === 'asc'){
         return obj1[prop] - obj2[prop];
     } 
     else{
@@ -50,7 +50,7 @@ function compareNumber(obj1, obj2){
 
 function compareString(obj1, obj2){
     let result = obj1[prop] < obj2[prop] ? -1 : obj1[prop] > obj2[prop] ? 1 : 0;
-    if (asc === 'asc'){
+    if (order === 'asc'){
         return result;
     } 
     else {
@@ -60,7 +60,7 @@ function compareString(obj1, obj2){
 
 function getPage(articles, page, limit){
     let result = [];
-    if (pageCount === 0 || page > pageCount){
+    if (pageCount === 0 || page > pageCount || page < 0 || limit <= 0){
         result.push({article:"nothing", reason:"out of range"});
     }
     else{

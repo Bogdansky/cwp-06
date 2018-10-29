@@ -19,10 +19,10 @@ module.exports.deleteComment = function deleteComment(req, res, payload, cb){
       });
       fs.writeFile('articles.json', JSON.stringify(articles), (err) => {
         fs.appendFile('log.txt', `\n${result}\n`, () => {});
-        cb(null,result ? result : nonObj);
+        cb(null,result ? result : { code: 404, message: 'Not found'});
       });
     }
     else{
-      cb(nonObj);
+      cb({ code: 404, message: 'Not found'});
     }
 }

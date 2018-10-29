@@ -14,6 +14,6 @@ module.exports.read = function read(req, res, payload, cb){
       cb(null,result ? result: {code:418,message:"I'm teapot"});
     }
     else{
-      cb(nonObj);
+      cb({ code: 404, message: 'Not found'});
     }
 }

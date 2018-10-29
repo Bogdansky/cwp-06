@@ -13,6 +13,6 @@ module.exports.readall = function create(req, res, payload, cb){
       });
     }
     else{
-      cb(nonObj);
+      cb({ code: 404, message: 'Not found'});
     }
 }
